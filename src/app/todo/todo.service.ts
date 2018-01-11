@@ -14,24 +14,7 @@ export class TodoService {
   constructor() { }
 
   get(query = ''){
-    return new Promise(resolve => {
-      let data;
-
-      if(query === 'completed' || query === 'active') {
-        console.log(query);
-        data = this.getActiveOrCompleted(query);
-      } else {
-        data = todos;
-      }
-      resolve(data)
-    });
-  }
-
-  getActiveOrCompleted(query) {
-      var isCompleted = query === 'completed';
-      const data = todos.filter(todo => todo.isDone === isCompleted);
-
-      return data;
+    return new Promise(resolve => resolve(this.getByQuery(query)));
   }
 
   add(newTodo) {
@@ -40,14 +23,6 @@ export class TodoService {
       todos.push(newTodo);
       resolve(newTodo);
     });
-  }
-
-  completeTask(id, value) {
-    return new Promise (resolve => {
-      const index = todos.findIndex(todo => todo.id === id);
-      todos[index].isDone = value;
-      resolve(todos);
-    })
   }
 
   update(data) {
@@ -66,10 +41,39 @@ export class TodoService {
     });
   }
 
-  clearAll(){
-    return new Promise(resolve => {
-      todos = [];
+  completeTask(id, value) {
+    return new Promise (resolve => {
+      const index = todos.findIndex(todo => todo.id === id);
+      todos[index].isDone = value;
       resolve(todos);
+    })
+  }
+
+  clearAllCompleted(query){
+    return new Promise(resolve => {
+      const tasks = this.getByQuery(query);
+
+      const toBeDone = tasks.filter(todo => !todo.isDone);
+      resolve(toBeDone);
     });
+  }
+
+  getByQuery(query) {
+    let data;
+
+    if(query === 'completed' || query === 'active') {
+      console.log(query);
+      data = this.getActiveOrCompleted(query);
+    } else {
+      data = todos;
+    }
+    return data
+  }
+
+  getActiveOrCompleted(query) {
+      var isCompleted = query === 'completed';
+      const data = todos.filter(todo => todo.isDone === isCompleted);
+
+      return data;
   }
 }

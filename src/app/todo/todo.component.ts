@@ -67,8 +67,11 @@ export class TodoComponent implements OnInit {
   }
 
   clearAll() {
-    this.todoService.clearAll().then(() => {
-      return this.getTodos();
+    const query = this.path;
+
+    this.todoService.clearAllCompleted(query).then((toBeDone) => {
+      this.todos = toBeDone
+      return this.todos;
     });
   }
 }
