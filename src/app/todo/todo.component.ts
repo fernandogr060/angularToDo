@@ -24,21 +24,27 @@ export class TodoComponent implements OnInit {
     });
   }
 
-  getTodos(query = '') {
+  /**
+   * @param {string} query
+   */
+  getTodos(query: string = '') {
     return this.todoService.get(query).then(todos => {
       this.todos = todos;
-      this.activeTasks = this.tasksToBeDone()
+      this.activeTasks = this.tasksToBeDone();
     });
   }
 
-  tasksToBeDone() {
-    const tasksDone = this.todos.filter(todo => todo.isDone).length;
-
-    return this.todos.length - tasksDone;
+  
+  /**
+   * @return {number} tasksLeft
+   */
+  tasksToBeDone(): number {
+    const tasksLeft = this.todos.length - this.todos.filter(todo => todo.isDone).length;
+    return tasksLeft;
   }
 
   addTodo() {
-    this.todoService.add({ title: this.newTodo, isDone: false }).then(() => {
+    this.todoService.add({id: null, title: this.newTodo, isDone: false }).then(() => {
       return this.getTodos();
     }).then(() => {
       this.newTodo = ''; // clear input form value
@@ -52,7 +58,6 @@ export class TodoComponent implements OnInit {
   }
 
   updateTodo(todo, value) {
-    console.log(value);
     todo.title = value;
     this.todoService.update(todo).then(() => {
       todo.editing = false;
@@ -66,11 +71,10 @@ export class TodoComponent implements OnInit {
     });
   }
 
-  clearAll() {
+  clearAllCompleted() {
     const query = this.path;
-
     this.todoService.clearAllCompleted(query).then((toBeDone) => {
-      this.todos = toBeDone
+      this.todos = toBeDone;
       return this.todos;
     });
   }
